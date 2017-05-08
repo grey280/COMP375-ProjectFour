@@ -11,7 +11,7 @@ import RealmSwift
 
 class Video: Object{
     dynamic var title = ""
-    dynamic var descr = ""
+    dynamic var detail = ""
     dynamic private var thumbURLi = ""
     var thumbURL: URL?{
         get{
@@ -22,4 +22,13 @@ class Video: Object{
         }
     }
     dynamic var videoID = ""
+    
+    convenience init(_ ID: String){
+        self.init()
+        self.videoID = ID
+    }
+    
+    override static func primaryKey() -> String? {
+        return "videoID"
+    }
 }
