@@ -7,8 +7,13 @@
 //
 
 import UIKit
+import RealmSwift
 
 class FavoritesTableViewController: UITableViewController {
+    
+    var realm: Realm!
+    var notificationToken: NotificationToken!
+    var favorites = List<Video>()
 
     override func viewDidLoad() {
         super.viewDidLoad()

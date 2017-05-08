@@ -28,7 +28,16 @@ class Video: Object{
         self.videoID = ID
     }
     
+    convenience init(_ ID: String, title: String, description detail: String, thumbnailURL thumbURL: URL){
+        self.init()
+        self.videoID = ID
+        self.title = title
+        self.detail = detail
+        self.thumbURL = thumbURL
+    }
+    
     override static func primaryKey() -> String? {
         return "videoID"
     }
 }
+
