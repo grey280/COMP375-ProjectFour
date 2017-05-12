@@ -120,6 +120,7 @@ class FavoritesTableViewController: UITableViewController {
         // I *could* subclass UITableViewCell and handle this that way, but this is more fun
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(FavoritesTableViewController.cellTap(_:)))
         cell.addGestureRecognizer(tapRecognizer)
+        cell.showsReorderControl = true // and this way we can always rearrange things, hopefully
         return cell
     }
 
@@ -143,12 +144,14 @@ class FavoritesTableViewController: UITableViewController {
     }
     */
 
-    /*
+    
     // Override to support rearranging the table view.
     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
+        try! realm.write{
+            favorites.move(from: fromIndexPath.row, to: to.row) // Turns out the List class is part of Realm, I spent a while trying to find it in the Swift docs
+        }
     }
-    */
+ 
 
     /*
     // Override to support conditional rearranging of the table view.
