@@ -33,24 +33,22 @@ class FavoritesTableViewController: UITableViewController {
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
-        return 0
+        return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of rows
-        return 0
+        return favorites.count
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        if let thumbURL = favorites[indexPath.row].thumbURL{
+            cell.imageView?.downloadedFrom(url: thumbURL)
+        }
+        cell.textLabel?.text = favorites[indexPath.row].title
+        cell.detailTextLabel?.text = favorites[indexPath.row].detail
         return cell
     }
-    */
 
     /*
     // Override to support conditional editing of the table view.
@@ -97,4 +95,36 @@ class FavoritesTableViewController: UITableViewController {
     }
     */
 
+}
+
+
+extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/questions/24231680/loading-downloading-image-from-url-on-swift)
+    /// Fills the image with a URL
+    ///
+    /// - Parameters:
+    ///   - url: URL to load the file from
+    ///   - mode: UIViewContentMode to use, defaults .scaleAspectFit
+    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+        contentMode = mode
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            guard
+                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
+                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
+                let data = data, error == nil,
+                let image = UIImage(data: data)
+                else { return }
+            DispatchQueue.main.async() { () -> Void in
+                self.image = image
+            }
+            }.resume()
+    }
+    /// Fills the image with a URL
+    ///
+    /// - Parameters:
+    ///   - link: URL to load the file from, as a String
+    ///   - mode: UIViewContentMode to use, defaults .scaleAspectFit
+    func downloadedFrom(link: String, contentMode mode: UIViewContentMode = .scaleAspectFit) {
+        guard let url = URL(string: link) else { return }
+        downloadedFrom(url: url, contentMode: mode)
+    }
 }
