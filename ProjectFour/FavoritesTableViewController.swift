@@ -37,11 +37,9 @@ class FavoritesTableViewController: UITableViewController {
                 let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
                 let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
                 
-                // Realm instances are only valid on a single thread and
-                //  notification blocks need to be added to a thread with a runloop.
+                // Realm instances are only valid on a single thread and notification blocks need to be added to a thread with a runloop.
                 // The main thread, thread 0, has a built in run loop.
-                // DispatchQueue.main.async is the way in Swift 3 to
-                //  add function calls, asynchronously, to the main thread
+                // DispatchQueue.main.async is the way in Swift 3 to add function calls, asynchronously, to the main thread
                 DispatchQueue.main.async {
                     
                     // create a Realm instance with the specified configuration
@@ -55,10 +53,8 @@ class FavoritesTableViewController: UITableViewController {
                     
                     // Add a handler, i.e, the closure, containing the call to updateList(),
                     //  to realm.
-                    // The closure is called after each realm write is committed
-                    //  until notificationToken.stop() is executed
+                    // The closure is called after each realm write is committed until notificationToken.stop() is executed
                     let block: NotificationBlock = {_ in
-                        print("NotificationBlock fired")
                         self.updateList()
                     }
                     self.notificationToken = self.realm.addNotificationBlock(block)
@@ -108,8 +104,8 @@ class FavoritesTableViewController: UITableViewController {
     func cellTap(_ sender: UITapGestureRecognizer){
         let sendLocation = sender.location(in: self.tableView)
         let path = self.tableView.indexPathForRow(at: sendLocation)
-        let videoURL = "https://www.youtube.com/watch?v=\(favorites[path?.row ?? 0].videoID)"
-        let sfVC = SFSafariViewController(url: URL(string: videoURL)!)
+        let videoURL = favorites[path?.row ?? 0].watchURL
+        let sfVC = SFSafariViewController(url: videoURL)
         self.present(sfVC, animated: true, completion: nil)
     }
 

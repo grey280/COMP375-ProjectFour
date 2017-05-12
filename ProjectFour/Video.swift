@@ -22,6 +22,9 @@ class Video: Object{
         }
     }
     dynamic var videoID = ""
+    var watchURL: URL{
+        return URL(string: "https://www.youtube.com/watch?v=\(videoID)") ?? URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    }
     
     convenience init(_ ID: String){
         self.init()
