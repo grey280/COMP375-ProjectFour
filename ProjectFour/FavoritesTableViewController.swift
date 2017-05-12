@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SafariServices
 
 class FavoritesTableViewController: UITableViewController {
     
@@ -99,6 +100,17 @@ class FavoritesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return favorites.count
     }
+    
+    /// Handles a cell being tapped; figures out which cell it was, then fires the proper event
+    ///
+    /// - Parameter sender: the sending UITapGestureRecognizer
+    func cellTap(_ sender: UITapGestureRecognizer){
+        let sendLocation = sender.location(in: self.tableView)
+        let path = self.tableView.indexPathForRow(at: sendLocation)
+        let videoURL = "https://www.youtube.com/watch?v=\(favorites[path?.row ?? 0].videoID)"
+        let sfVC = SFSafariViewController(url: URL(string: videoURL)!)
+        self.present(sfVC, animated: true, completion: nil)
+    }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
@@ -107,6 +119,10 @@ class FavoritesTableViewController: UITableViewController {
         }
         cell.textLabel?.text = favorites[indexPath.row].title
         cell.detailTextLabel?.text = favorites[indexPath.row].detail
+        
+        // I *could* subclass UITableViewCell and handle this that way, but this is more fun
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(FavoritesTableViewController.cellTap(_:)))
+        cell.addGestureRecognizer(tapRecognizer)
         return cell
     }
 
