@@ -350,6 +350,7 @@
 				2D4816B41EC0EB200001ABDD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

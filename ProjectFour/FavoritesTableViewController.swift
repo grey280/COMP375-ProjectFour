@@ -14,10 +14,63 @@ class FavoritesTableViewController: UITableViewController {
     var realm: Realm!
     var notificationToken: NotificationToken!
     var favorites = List<Video>()
+    
+    func setUpRealm() {
+        
+        // Log in existing user with their username and password
+        
+        
+        // replace localhost with the url of the professors laptop, i.e. his realm server
+        //        let syncCredentials = SyncCredentials.usernamePassword(username: username, password: password, register: false)
+        let syncCredentials = SyncCredentials.usernamePassword(username: username, password: password)
+        let url = URL(string: "http://localhost:9080")!
+        
+        // log in the user with the given credentials to the specified server
+        SyncUser.logIn(with: syncCredentials, server: url) {
+            (user, error) in
+            if let user = user {
+                
+                // Create a Realm configuration with the specified user and realm directory
+                let url = URL(string: "realm://localhost:9080/~/realmtasks")!
+                let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
+                let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
+                
+                // Realm instances are only valid on a single thread and
+                //  notification blocks need to be added to a thread with a runloop.
+                // The main thread, thread 0, has a built in run loop.
+                // DispatchQueue.main.async is the way in Swift 3 to
+                //  add function calls, asynchronously, to the main thread
+                DispatchQueue.main.async {
+                    
+                    // create a Realm instance with the specified configuration
+                    self.realm = try! Realm(configuration: realmConfiguration)
+                    if self.realm.objects(TaskList.self).first == nil{
+                        try! self.realm.write {
+                            self.realm.add(TaskList())
+                        }
+                    }
+                    self.updateList()
+                    
+                    // Add a handler, i.e, the closure, containing the call to updateList(),
+                    //  to realm.
+                    // The closure is called after each realm write is committed
+                    //  until notificationToken.stop() is executed
+                    let block: NotificationBlock = {_ in
+                        print("NotificationBlock fired")
+                        self.updateList()
+                    }
+                    self.notificationToken = self.realm.addNotificationBlock(block)
+                }
+            } else if let error = error {
+                fatalError(String(describing: error))
+            }
+            
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -99,6 +152,7 @@ class FavoritesTableViewController: UITableViewController {
 
 
 extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/questions/24231680/loading-downloading-image-from-url-on-swift)
+    
     /// Fills the image with a URL
     ///
     /// - Parameters:
