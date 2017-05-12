@@ -22,7 +22,7 @@ class FavoritesTableViewController: UITableViewController {
         
         // replace localhost with the url of the professors laptop, i.e. his realm server
         //        let syncCredentials = SyncCredentials.usernamePassword(username: username, password: password, register: false)
-        let syncCredentials = SyncCredentials.usernamePassword(username: username, password: password)
+        let syncCredentials = SyncCredentials.usernamePassword(username: login.username, password: login.password)
         let url = URL(string: "http://localhost:9080")!
         
         // log in the user with the given credentials to the specified server
@@ -44,9 +44,9 @@ class FavoritesTableViewController: UITableViewController {
                     
                     // create a Realm instance with the specified configuration
                     self.realm = try! Realm(configuration: realmConfiguration)
-                    if self.realm.objects(TaskList.self).first == nil{
+                    if self.realm.objects(VideoList.self).first == nil{
                         try! self.realm.write {
-                            self.realm.add(TaskList())
+                            self.realm.add(VideoList())
                         }
                     }
                     self.updateList()
@@ -66,6 +66,13 @@ class FavoritesTableViewController: UITableViewController {
             }
             
         }
+    }
+    
+    func updateList() {
+        if self.favorites.realm == nil, let list = self.realm.objects(VideoList.self).first {
+            self.favorites = list.items
+        }
+        self.tableView.reloadData()
     }
 
     override func viewDidLoad() {

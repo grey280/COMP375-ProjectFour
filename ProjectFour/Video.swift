@@ -40,3 +40,12 @@ class Video: Object{
         return "videoID"
     }
 }
+
+class VideoList: Object {
+    dynamic var id = ""
+    let items = List<Video>()
+    
+    override static func primaryKey() -> String? {
+        return "id"
+    }
+}
