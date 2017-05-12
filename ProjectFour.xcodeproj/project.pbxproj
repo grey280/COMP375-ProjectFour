@@ -17,6 +17,7 @@
 		2D4816BA1EC0EB390001ABDD /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2D4816B61EC0EB390001ABDD /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2D4816BE1EC0EB6F0001ABDD /* FavoritesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4816BD1EC0EB6F0001ABDD /* FavoritesTableViewController.swift */; };
 		2D4816C01EC0EC040001ABDD /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4816BF1EC0EC040001ABDD /* Video.swift */; };
+		2DC58C2F1EC62C0F006DE24F /* RealmConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC58C2E1EC62C0F006DE24F /* RealmConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,6 +46,7 @@
 		2D4816B61EC0EB390001ABDD /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = "<group>"; };
 		2D4816BD1EC0EB6F0001ABDD /* FavoritesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesTableViewController.swift; sourceTree = "<group>"; };
 		2D4816BF1EC0EC040001ABDD /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
+		2DC58C2E1EC62C0F006DE24F /* RealmConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +87,7 @@
 				2D4816A71EC0EB200001ABDD /* Main.storyboard */,
 				2D4816BF1EC0EC040001ABDD /* Video.swift */,
 				2D4816BD1EC0EB6F0001ABDD /* FavoritesTableViewController.swift */,
+				2DC58C2E1EC62C0F006DE24F /* RealmConfig.swift */,
 			);
 			path = ProjectFour;
 			sourceTree = "<group>";
@@ -177,6 +180,7 @@
 				2D4816A21EC0EB200001ABDD /* AppDelegate.swift in Sources */,
 				2D4816C01EC0EC040001ABDD /* Video.swift in Sources */,
 				2D4816BE1EC0EB6F0001ABDD /* FavoritesTableViewController.swift in Sources */,
+				2DC58C2F1EC62C0F006DE24F /* RealmConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
