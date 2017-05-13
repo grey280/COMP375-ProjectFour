@@ -1,0 +1,170 @@
+//
+//  SearchTableViewController.swift
+//  ProjectFour
+//
+//  Created by Grey Patterson on 2017-05-12.
+//  Copyright © 2017 Grey Patterson. All rights reserved.
+//
+
+import UIKit
+import RealmSwift
+
+class SearchTableViewController: UITableViewController {
+
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    var results = [Video]()
+    var favorites = List<Video>()
+    var realm: Realm!
+    var notificationToken: NotificationToken!
+    
+    func setUpRealm() {
+        // Note: you need a file somewhere in here that declares
+        /*
+         struct login{
+         static let username = "[the relevant Realm username]"
+         static let password = "[the relevant Realm password]"
+         static let serverURL: URL // the URL of the Realm server to use
+         }
+         */
+        //        let syncCredentials = SyncCredentials.usernamePassword(username: username, password: password, register: false)
+        let syncCredentials = SyncCredentials.usernamePassword(username: login.username, password: login.password)
+        
+        // log in the user with the given credentials to the specified server
+        SyncUser.logIn(with: syncCredentials, server: login.serverURL) {
+            (user, error) in
+            if let user = user {
+                // Create a Realm configuration with the specified user and realm directory
+                let url = URL(string: "\(login.serverURL.absoluteString)/~/videolist")!
+                let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
+                let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
+                
+                // Realm instances are only valid on a single thread and notification blocks need to be added to a thread with a runloop.
+                // The main thread, thread 0, has a built in run loop.
+                // DispatchQueue.main.async is the way in Swift 3 to add function calls, asynchronously, to the main thread
+                DispatchQueue.main.async {
+                    
+                    // create a Realm instance with the specified configuration
+                    self.realm = try! Realm(configuration: realmConfiguration)
+                    if self.realm.objects(VideoList.self).first == nil{
+                        try! self.realm.write {
+                            self.realm.add(VideoList())
+                        }
+                    }
+                    self.updateList()
+                    
+                    // Add a handler, i.e, the closure, containing the call to updateList(),
+                    //  to realm.
+                    // The closure is called after each realm write is committed until notificationToken.stop() is executed
+                    let block: NotificationBlock = {_ in
+                        self.updateList()
+                    }
+                    self.notificationToken = self.realm.addNotificationBlock(block)
+                }
+            } else if let error = error {
+                fatalError(String(describing: error))
+            }
+            
+        }
+    }
+    
+    func updateList() {
+        if self.favorites.realm == nil, let list = self.realm.objects(VideoList.self).first {
+            self.favorites = list.items
+        }
+        self.tableView.reloadData()
+    }
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Uncomment the following line to preserve selection between presentations
+        // self.clearsSelectionOnViewWillAppear = false
+
+        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+    // MARK: - Table view data source
+
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return results.count
+    }
+
+    func cellPress(_ sender: UILongPressGestureRecognizer){
+        let sendLocation = sender.location(in: self.tableView)
+        let path = self.tableView.indexPathForRow(at: sendLocation)
+        let videoURL = results[path?.row ?? 0].watchURL
+        // TODO: finish using this stuff
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        if let thumbURL = results[indexPath.row].thumbURL{
+            cell.imageView?.downloadedFrom(url: thumbURL)
+        }
+        cell.textLabel?.text = results[indexPath.row].title
+        cell.detailTextLabel?.text = results[indexPath.row].detail
+        
+        // I *could* subclass UITableViewCell and handle this that way, but this is more fun
+        let pressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(SearchTableViewController.cellPress(_:)))
+        cell.addGestureRecognizer(pressRecognizer)
+        return cell
+    }
+
+    /*
+    // Override to support conditional editing of the table view.
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        // Return false if you do not want the specified item to be editable.
+        return true
+    }
+    */
+
+    /*
+    // Override to support editing the table view.
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            // Delete the row from the data source
+            tableView.deleteRows(at: [indexPath], with: .fade)
+        } else if editingStyle == .insert {
+            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
+        }    
+    }
+    */
+
+    /*
+    // Override to support rearranging the table view.
+    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+
+    }
+    */
+
+    /*
+    // Override to support conditional rearranging of the table view.
+    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
+        // Return false if you do not want the item to be re-orderable.
+        return true
+    }
+    */
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
+}
