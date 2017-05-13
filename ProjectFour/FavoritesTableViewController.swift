@@ -132,6 +132,14 @@ class FavoritesTableViewController: UITableViewController {
     }
     */
 
+    override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]?{
+        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (sender, path) in
+            try! self.realm.write {
+                self.favorites.remove(at: path.row)
+            }
+        }
+        return [deleteAction]
+    }
     /*
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
