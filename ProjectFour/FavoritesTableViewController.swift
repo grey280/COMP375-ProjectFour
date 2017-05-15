@@ -114,11 +114,11 @@ class FavoritesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let thumbURL = favorites[indexPath.row].thumbURL{
-//            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
+            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
 //            cell.imageView?.downloadedFrom(url: thumbURL)
-            if let data = try? Data(contentsOf: thumbURL){
-                cell.imageView?.image = UIImage(data: data)
-            }
+//            if let data = try? Data(contentsOf: thumbURL){
+//                cell.imageView?.image = UIImage(data: data)
+//            }
         }
         cell.textLabel?.text = favorites[indexPath.row].title
         cell.detailTextLabel?.text = favorites[indexPath.row].detail
@@ -192,7 +192,7 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
     
     func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, tableView: UITableView, cell: UITableViewCell) {
         contentMode = mode
-        print("  \(cell.textLabel?.text ?? "Untitled") \nURL: \(url.absoluteURL)")
+//        print("  \(cell.textLabel?.text ?? "Untitled") \nURL: \(url.absoluteURL)")
         URLSession.shared.dataTask(with: url) { (data, response, error) in
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
@@ -203,9 +203,10 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
             DispatchQueue.main.async() { () -> Void in
                 if self.image == nil{
                     self.image = image
-                    if let path = tableView.indexPath(for: cell){
-                        tableView.reloadRows(at: [path], with: .fade)
-                    }
+//                    if let path = tableView.indexPath(for: cell){
+//                        tableView.reloadRows(at: [path], with: .fade)
+//                    }
+                    cell.backgroundView?.setNeedsDisplay()
                 }
             }
         }.resume()
