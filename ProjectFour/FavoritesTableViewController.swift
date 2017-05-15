@@ -29,11 +29,11 @@ class FavoritesTableViewController: UITableViewController {
         let syncCredentials = SyncCredentials.usernamePassword(username: login.username, password: login.password)
         
         // log in the user with the given credentials to the specified server
-        SyncUser.logIn(with: syncCredentials, server: login.serverURL) {
+        SyncUser.logIn(with: syncCredentials, server: URL(string: login.serverURL)!) {
             (user, error) in
             if let user = user {
                 // Create a Realm configuration with the specified user and realm directory
-                let url = URL(string: "\(login.serverURL.absoluteString)/~/videolist/")!
+                let url = URL(string: login.serverURL)!
                 let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
                 let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
                 
