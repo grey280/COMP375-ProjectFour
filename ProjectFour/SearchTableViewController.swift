@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import SafariServices
 
 class SearchTableViewController: UITableViewController {
 
@@ -108,6 +109,14 @@ class SearchTableViewController: UITableViewController {
         // TODO: finish using this stuff
     }
     
+    func cellTap(_ sender: UITapGestureRecognizer){ // Handle a tap
+        let sendLocation = sender.location(in: self.tableView)
+        let path = self.tableView.indexPathForRow(at: sendLocation)
+        let videoURL = results[path?.row ?? 0].watchURL
+        let sView = SFSafariViewController(url: videoURL)
+        self.present(sView, animated: true, completion: nil)
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let thumbURL = results[indexPath.row].thumbURL{
@@ -116,9 +125,11 @@ class SearchTableViewController: UITableViewController {
         cell.textLabel?.text = results[indexPath.row].title
         cell.detailTextLabel?.text = results[indexPath.row].detail
         
-        // I *could* subclass UITableViewCell and handle this that way, but this is more fun
         let pressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(SearchTableViewController.cellPress(_:)))
         cell.addGestureRecognizer(pressRecognizer)
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(SearchTableViewController.cellTap(_:)))
+        cell.addGestureRecognizer(tapRecognizer)
+        
         return cell
     }
 
