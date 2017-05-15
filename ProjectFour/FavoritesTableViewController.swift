@@ -114,8 +114,11 @@ class FavoritesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let thumbURL = favorites[indexPath.row].thumbURL{
-            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
+//            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
 //            cell.imageView?.downloadedFrom(url: thumbURL)
+            if let data = try? Data(contentsOf: thumbURL){
+                cell.imageView?.image = UIImage(data: data)
+            }
         }
         cell.textLabel?.text = favorites[indexPath.row].title
         cell.detailTextLabel?.text = favorites[indexPath.row].detail
