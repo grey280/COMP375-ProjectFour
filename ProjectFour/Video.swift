@@ -12,28 +12,28 @@ import RealmSwift
 class Video: Object{
     dynamic var title = ""
     dynamic var detail = ""
-    dynamic private var thumbURLi = ""
+    dynamic private var thumbnailUrl = ""
     var thumbURL: URL?{
         get{
-            return URL(string: thumbURLi)
+            return URL(string: thumbnailUrl)
         }
         set{
-            thumbURLi = newValue?.absoluteString ?? ""
+            thumbnailUrl = newValue?.absoluteString ?? ""
         }
     }
-    dynamic var videoID = ""
+    dynamic var videoId = ""
     var watchURL: URL{
-        return URL(string: "https://www.youtube.com/watch?v=\(videoID)") ?? URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")!
+        return URL(string: "https://www.youtube.com/watch?v=\(videoId)") ?? URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")!
     }
     
     convenience init(_ ID: String){
         self.init()
-        self.videoID = ID
+        self.videoId = ID
     }
     
     convenience init(_ ID: String, title: String, description detail: String, thumbnailURL thumbURL: URL){
         self.init()
-        self.videoID = ID
+        self.videoId = ID
         self.title = title
         self.detail = detail
         self.thumbURL = thumbURL
