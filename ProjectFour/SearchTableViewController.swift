@@ -30,6 +30,7 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
             return()
         }
         results = [Video]() // Clear old results
+        searchBar.resignFirstResponder()
         tableView.reloadData()
         let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(encodedQuery)&key=\(google.APIKey)&type=video")
         URLSession.shared.dataTask(with: url!) {
@@ -39,7 +40,6 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
             }
             else if let data = data {
                 if let json = try! JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
-                    print(json)
                     for result in json["items"] as! [[String: AnyObject]]{
                         let IDblock = result["id"] as! [String: AnyObject]
                         let ID = IDblock["videoId"] as! String
@@ -129,6 +129,7 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
         super.viewDidLoad()
         setUpRealm()
         searchBar.delegate = self
+        
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -171,7 +172,7 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let thumbURL = results[indexPath.row].thumbURL{
-            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, indexPath: indexPath)
+            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
         }
         cell.textLabel?.text = results[indexPath.row].title
         cell.detailTextLabel?.text = results[indexPath.row].detail
