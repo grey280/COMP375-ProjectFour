@@ -113,34 +113,9 @@ class FavoritesTableViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-//        if let thumbURL = favorites[indexPath.row].thumbURL{
-//            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
-//            cell.imageView?.downloadedFrom(url: thumbURL)
-//            if let data = try? Data(contentsOf: thumbURL){
-//                cell.imageView?.image = UIImage(data: data)
-//            }
-//        }
-//        if let image = favorites[indexPath.row].thumbnail{
-//            cell.imageView?.image = image
-//        } else {
-//            if let thumbURL = favorites[indexPath.row].thumbURL{
-//                URLSession.shared.dataTask(with: thumbURL) { (data, response, error) in
-//                    guard
-//                        let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-//                        let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-//                        let data = data, error == nil,
-//                        let image = UIImage(data: data)
-//                        else { return }
-//                    DispatchQueue.main.async() { () -> Void in
-//                        cell.imageView?.image = image
-//                        self.favorites[indexPath.row].thumbnail = image
-//                        print(image)
-//                        print(self.favorites[indexPath.row].thumbnail)
-//                        self.tableView.reloadRows(at: [indexPath], with: .fade)
-//                    }
-//                }.resume()
-//            }
-//        }
+        if let thumbURL = favorites[indexPath.row].thumbURL{
+            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
+        }
         cell.textLabel?.text = favorites[indexPath.row].title
         cell.detailTextLabel?.text = favorites[indexPath.row].detail
         
@@ -224,9 +199,9 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
             DispatchQueue.main.async() { () -> Void in
                 if self.image == nil{
                     self.image = image
-//                    if let path = tableView.indexPath(for: cell){
-//                        tableView.reloadRows(at: [path], with: .fade)
-//                    }
+                    if let path = tableView.indexPath(for: cell){
+                        tableView.reloadRows(at: [path], with: .none)
+                    }
                     
                 }
             }
