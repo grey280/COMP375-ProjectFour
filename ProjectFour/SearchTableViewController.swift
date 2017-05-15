@@ -10,7 +10,7 @@ import UIKit
 import RealmSwift
 import SafariServices
 
-class SearchTableViewController: UITableViewController {
+class SearchTableViewController: UITableViewController, UISearchBarDelegate {
 
     @IBOutlet weak var searchBar: UISearchBar!
     
@@ -18,6 +18,48 @@ class SearchTableViewController: UITableViewController {
     var favorites = List<Video>()
     var realm: Realm!
     var notificationToken: NotificationToken!
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
+        if let query = searchBar.text{
+            print(query) // shut up, Xcode, this isn't an issue
+        }
+    }
+    
+    func search(_ query: String){
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(query)&key=\(google.APIKey)")
+        URLSession.shared.dataTask(with: url!) {
+            (data, response, err) in
+            if let err = err {
+                print("err: \(err)")
+            }
+            else if let data = data {
+                if let json = try! JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
+                    print(json)
+                    for result in json["items"] as! [[String: AnyObject]]{
+                        let IDblock = result["id"] as! [String: AnyObject]
+                        let ID = IDblock["videoId"] as! String
+                        
+                        let snippet = result["snippet"] as! [String: AnyObject]
+                        
+                        let title = snippet["title"] as! String
+                        
+                        let description = snippet["description"] as! String
+                        
+                        let thumbnails = snippet["thumbnails"] as! [String: AnyObject]
+                        let defaultThumb = thumbnails["default"] as! [String: AnyObject]
+                        let defaultThumbURL = URL(string: defaultThumb["url"] as! String)!
+
+                        let tempVideo = Video(ID, title: title, description: description, thumbnailURL: defaultThumbURL)
+                        
+                        self.results.append(tempVideo)
+                    }
+                    if (self.results.count > 0) {
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }.resume()
+    }
     
     func setUpRealm() {
         // Note: you need a file somewhere in here that declares
@@ -73,7 +115,7 @@ class SearchTableViewController: UITableViewController {
         if self.favorites.realm == nil, let list = self.realm.objects(VideoList.self).first {
             self.favorites = list.items
         }
-        self.tableView.reloadData()
+//        self.tableView.reloadData()
     }
     
     
