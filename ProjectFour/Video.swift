@@ -6,13 +6,16 @@
 //  Copyright © 2017 Grey Patterson. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import RealmSwift
 
 class Video: Object{
     dynamic var title = ""
     dynamic var detail = ""
     dynamic private var thumbnailUrl = ""
+    
+    
+//    var thumbnail: UIImage?
     
     var thumbURL: URL?{
         get{
@@ -24,7 +27,7 @@ class Video: Object{
     }
     
     override static func ignoredProperties() -> [String] {
-        return ["thumbURL", "watchURL"]
+        return ["thumbURL", "watchURL", "thumbnail"]
     }
     
     dynamic var videoId = ""

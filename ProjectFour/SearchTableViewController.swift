@@ -170,10 +170,10 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if let thumbURL = results[indexPath.row].thumbURL{
-//            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, indexPath: indexPath)
-//            cell.imageView?.downloadedFrom(url: thumbURL)
-        }
+//        if let thumbURL = results[indexPath.row].thumbURL{
+////            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, indexPath: indexPath)
+////            cell.imageView?.downloadedFrom(url: thumbURL)
+//        }
         cell.textLabel?.text = results[indexPath.row].title
         cell.detailTextLabel?.text = results[indexPath.row].detail
         
