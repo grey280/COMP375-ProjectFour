@@ -114,8 +114,8 @@ class FavoritesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let thumbURL = favorites[indexPath.row].thumbURL{
-//            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, indexPath: indexPath)
-            cell.imageView?.downloadedFrom(url: thumbURL)
+            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, indexPath: indexPath)
+//            cell.imageView?.downloadedFrom(url: thumbURL)
         }
         cell.textLabel?.text = favorites[indexPath.row].title
         cell.detailTextLabel?.text = favorites[indexPath.row].detail
@@ -198,8 +198,10 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
                 let image = UIImage(data: data)
                 else { return }
             DispatchQueue.main.async() { () -> Void in
-                self.image = image
-                tableView.reloadRows(at: [indexPath], with: .fade)
+                if self.image == nil{
+                    self.image = image
+                    tableView.reloadRows(at: [indexPath], with: .fade)
+                }
             }
             }.resume()
     }
