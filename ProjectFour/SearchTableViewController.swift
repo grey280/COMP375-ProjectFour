@@ -105,8 +105,9 @@ class SearchTableViewController: UITableViewController {
     func cellPress(_ sender: UILongPressGestureRecognizer){
         let sendLocation = sender.location(in: self.tableView)
         let path = self.tableView.indexPathForRow(at: sendLocation)
-        let videoURL = results[path?.row ?? 0].watchURL
-        // TODO: finish using this stuff
+        try! realm.write {
+            favorites.append(results[path?.row ?? 0])
+        }
     }
     
     func cellTap(_ sender: UITapGestureRecognizer){ // Handle a tap
