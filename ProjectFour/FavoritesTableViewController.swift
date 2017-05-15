@@ -114,7 +114,7 @@ class FavoritesTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         if let thumbURL = favorites[indexPath.row].thumbURL{
-            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, indexPath: indexPath)
+            cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
 //            cell.imageView?.downloadedFrom(url: thumbURL)
         }
         cell.textLabel?.text = favorites[indexPath.row].title
@@ -187,10 +187,10 @@ class FavoritesTableViewController: UITableViewController {
 
 extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/questions/24231680/loading-downloading-image-from-url-on-swift)
     
-    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, tableView: UITableView, indexPath: IndexPath) {
+    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, tableView: UITableView, cell: UITableViewCell) {
         contentMode = mode
+        print("  \(cell.textLabel?.text ?? "Untitled") \nURL: \(url.absoluteURL)")
         URLSession.shared.dataTask(with: url) { (data, response, error) in
-            print("Completion handler on \(url.absoluteURL)")
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
                 let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
@@ -200,10 +200,12 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
             DispatchQueue.main.async() { () -> Void in
                 if self.image == nil{
                     self.image = image
-                    tableView.reloadRows(at: [indexPath], with: .fade)
+                    if let path = tableView.indexPath(for: cell){
+                        tableView.reloadRows(at: [path], with: .fade)
+                    }
                 }
             }
-            }.resume()
+        }.resume()
     }
     
     /// Fills the image with a URL

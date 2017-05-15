@@ -26,10 +26,12 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func search(_ query: String){
+        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {
+            return()
+        }
         results = [Video]() // Clear old results
         tableView.reloadData()
-        
-        let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(query)&key=\(google.APIKey)&type=video")
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(encodedQuery)&key=\(google.APIKey)&type=video")
         URLSession.shared.dataTask(with: url!) {
             (data, response, err) in
             if let err = err {
