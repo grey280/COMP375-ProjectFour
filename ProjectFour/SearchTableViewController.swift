@@ -26,6 +26,9 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func search(_ query: String){
+        results = [Video]() // Clear old results
+        tableView.reloadData()
+        
         let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(query)&key=\(google.APIKey)&type=video")
         URLSession.shared.dataTask(with: url!) {
             (data, response, err) in
@@ -79,7 +82,7 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
             (user, error) in
             if let user = user {
                 // Create a Realm configuration with the specified user and realm directory
-                let url = URL(string: login.serverURL)!
+                let url = URL(string: login.fullURL)!
                 let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
                 let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
                 

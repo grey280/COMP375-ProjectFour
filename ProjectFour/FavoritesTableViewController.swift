@@ -33,7 +33,7 @@ class FavoritesTableViewController: UITableViewController {
             (user, error) in
             if let user = user {
                 // Create a Realm configuration with the specified user and realm directory
-                let url = URL(string: login.serverURL)!
+                let url = URL(string: login.fullURL)!
                 let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
                 let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
                 
