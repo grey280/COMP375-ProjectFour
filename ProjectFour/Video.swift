@@ -13,6 +13,7 @@ class Video: Object{
     dynamic var title = ""
     dynamic var detail = ""
     dynamic private var thumbnailUrl = ""
+    
     var thumbURL: URL?{
         get{
             return URL(string: thumbnailUrl)
@@ -21,7 +22,13 @@ class Video: Object{
             thumbnailUrl = newValue?.absoluteString ?? ""
         }
     }
+    
+    override static func ignoredProperties() -> [String] {
+        return ["thumbURL", "watchURL"]
+    }
+    
     dynamic var videoId = ""
+    
     var watchURL: URL{
         return URL(string: "https://www.youtube.com/watch?v=\(videoId)") ?? URL(string: "https://www.youtube.com/watch?v=dQw4w9WgXcQ")!
     }
@@ -36,11 +43,11 @@ class Video: Object{
         self.videoId = ID
         self.title = title
         self.detail = detail
-        self.thumbURL = thumbURL
+        self.thumbnailUrl = thumbURL.absoluteString
     }
     
     override static func primaryKey() -> String? {
-        return "videoID"
+        return "videoId"
     }
 }
 

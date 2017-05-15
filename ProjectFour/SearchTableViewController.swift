@@ -21,12 +21,12 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
         if let query = searchBar.text{
-            print(query) // shut up, Xcode, this isn't an issue
+            search(query)
         }
     }
     
     func search(_ query: String){
-        let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(query)&key=\(google.APIKey)")
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(query)&key=\(google.APIKey)&type=video")
         URLSession.shared.dataTask(with: url!) {
             (data, response, err) in
             if let err = err {
@@ -59,6 +59,7 @@ class SearchTableViewController: UITableViewController, UISearchBarDelegate {
                 }
             }
         }.resume()
+        print("Done!")
     }
     
     func setUpRealm() {
