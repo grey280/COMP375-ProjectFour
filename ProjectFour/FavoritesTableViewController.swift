@@ -33,7 +33,7 @@ class FavoritesTableViewController: UITableViewController {
             (user, error) in
             if let user = user {
                 // Create a Realm configuration with the specified user and realm directory
-                let url = URL(string: "\(login.serverURL.absoluteString)/~/videolist")!
+                let url = URL(string: "\(login.serverURL.absoluteString)/~/videolist/")!
                 let syncConfiguration = SyncConfiguration(user: user, realmURL: url)
                 let realmConfiguration = Realm.Configuration(syncConfiguration: syncConfiguration)
                 
@@ -75,6 +75,8 @@ class FavoritesTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        setUpRealm()
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
