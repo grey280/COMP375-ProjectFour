@@ -187,23 +187,22 @@ class FavoritesTableViewController: UITableViewController {
 
 extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/questions/24231680/loading-downloading-image-from-url-on-swift)
     
-//    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, tableView: UITableView, indexPath: IndexPath){
-//        contentMode = mode
-//        URLSession.shared.dataTask(with: url){ (data, response, error) in
-//            print("URLSession running for \(url.absoluteString)")
-//            guard
-//                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-//                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-//                let data = data, error == nil,
-//                let image = UIImage(data: data)
-//                else { return }
-//            DispatchQueue.main.async {
-//                self.image = image
-//                print("updating image from URL \(url.absoluteString)")
-//                tableView.reloadRows(at: [indexPath], with: .fade)
-//            }
-//        }.resume()
-//    }
+    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, tableView: UITableView, indexPath: IndexPath) {
+        contentMode = mode
+        URLSession.shared.dataTask(with: url) { (data, response, error) in
+            print("Completion handler on \(url.absoluteURL)")
+            guard
+                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
+                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
+                let data = data, error == nil,
+                let image = UIImage(data: data)
+                else { return }
+            DispatchQueue.main.async() { () -> Void in
+                self.image = image
+                tableView.reloadRows(at: [indexPath], with: .fade)
+            }
+            }.resume()
+    }
     
     /// Fills the image with a URL
     ///
@@ -213,6 +212,7 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
     func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
         contentMode = mode
         URLSession.shared.dataTask(with: url) { (data, response, error) in
+            print("Completion handler on \(url.absoluteURL)")
             guard
                 let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
                 let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
@@ -220,7 +220,6 @@ extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/qu
                 let image = UIImage(data: data)
                 else { return }
             DispatchQueue.main.async() { () -> Void in
-                print("Swapping image \(url.absoluteString)")
                 self.image = image
             }
         }.resume()
