@@ -11,7 +11,8 @@ import Foundation
 struct login{
     static let username = ""
     static let password = ""
-    static let serverURL = URL(string: "")!
+    static let serverURL = ""
+    static let fullURL = ""
 }
 
 struct google{

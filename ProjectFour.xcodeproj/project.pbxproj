@@ -19,6 +19,7 @@
 		2D4816C01EC0EC040001ABDD /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D4816BF1EC0EC040001ABDD /* Video.swift */; };
 		2DC58C2F1EC62C0F006DE24F /* RealmConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC58C2E1EC62C0F006DE24F /* RealmConfig.swift */; };
 		2DC58C311EC634F2006DE24F /* RealmConfig.template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC58C301EC634F2006DE24F /* RealmConfig.template.swift */; };
+		2DC58C331EC6ACE7006DE24F /* SearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DC58C321EC6ACE7006DE24F /* SearchTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +50,7 @@
 		2D4816BF1EC0EC040001ABDD /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		2DC58C2E1EC62C0F006DE24F /* RealmConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmConfig.swift; sourceTree = "<group>"; };
 		2DC58C301EC634F2006DE24F /* RealmConfig.template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RealmConfig.template.swift; sourceTree = "<group>"; };
+		2DC58C321EC6ACE7006DE24F /* SearchTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +89,7 @@
 			children = (
 				2D4816BC1EC0EB450001ABDD /* Supporting Files */,
 				2D4816A71EC0EB200001ABDD /* Main.storyboard */,
+				2DC58C321EC6ACE7006DE24F /* SearchTableViewController.swift */,
 				2D4816BF1EC0EC040001ABDD /* Video.swift */,
 				2D4816BD1EC0EB6F0001ABDD /* FavoritesTableViewController.swift */,
 				2DC58C2E1EC62C0F006DE24F /* RealmConfig.swift */,
@@ -181,6 +184,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D4816A21EC0EB200001ABDD /* AppDelegate.swift in Sources */,
+				2DC58C331EC6ACE7006DE24F /* SearchTableViewController.swift in Sources */,
 				2DC58C311EC634F2006DE24F /* RealmConfig.template.swift in Sources */,
 				2D4816C01EC0EC040001ABDD /* Video.swift in Sources */,
 				2D4816BE1EC0EB6F0001ABDD /* FavoritesTableViewController.swift in Sources */,

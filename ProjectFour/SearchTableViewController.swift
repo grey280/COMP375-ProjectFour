@@ -1,8 +1,8 @@
 //
-//  FavoritesTableViewController.swift
+//  SearchTableViewController.swift
 //  ProjectFour
 //
-//  Created by Grey Patterson on 2017-05-08.
+//  Created by Grey Patterson on 2017-05-12.
 //  Copyright © 2017 Grey Patterson. All rights reserved.
 //
 
@@ -10,21 +10,72 @@ import UIKit
 import RealmSwift
 import SafariServices
 
-class FavoritesTableViewController: UITableViewController {
+class SearchTableViewController: UITableViewController, UISearchBarDelegate {
+
+    @IBOutlet weak var searchBar: UISearchBar!
     
+    var results = [Video]()
+    var favorites = List<Video>()
     var realm: Realm!
     var notificationToken: NotificationToken!
-    var favorites = List<Video>()
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar){
+        if let query = searchBar.text{
+            search(query)
+        }
+    }
+    
+    func search(_ query: String){
+        guard let encodedQuery = query.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) else {
+            return()
+        }
+        results = [Video]() // Clear old results
+        searchBar.resignFirstResponder()
+        tableView.reloadData()
+        let url = URL(string: "https://www.googleapis.com/youtube/v3/search?part=snippet&q=\(encodedQuery)&key=\(google.APIKey)&type=video")
+        URLSession.shared.dataTask(with: url!) {
+            (data, response, err) in
+            if let err = err {
+                print("err: \(err)")
+            }
+            else if let data = data {
+                if let json = try! JSONSerialization.jsonObject(with: data) as? [String: AnyObject] {
+                    for result in json["items"] as! [[String: AnyObject]]{
+                        let IDblock = result["id"] as! [String: AnyObject]
+                        let ID = IDblock["videoId"] as! String
+                        
+                        let snippet = result["snippet"] as! [String: AnyObject]
+                        
+                        let title = snippet["title"] as! String
+                        
+                        let description = snippet["description"] as! String
+                        
+                        let thumbnails = snippet["thumbnails"] as! [String: AnyObject]
+                        let defaultThumb = thumbnails["default"] as! [String: AnyObject]
+                        let defaultThumbURL = URL(string: defaultThumb["url"] as! String)!
+
+                        let tempVideo = Video(ID, title: title, description: description, thumbnailURL: defaultThumbURL)
+                        
+                        self.results.append(tempVideo)
+                    }
+                    if (self.results.count > 0) {
+                        self.tableView.reloadData()
+                    }
+                }
+            }
+        }.resume()
+        print("Done!")
+    }
     
     func setUpRealm() {
         // Note: you need a file somewhere in here that declares
         /*
          struct login{
-            static let username = "[the relevant Realm username]"
-            static let password = "[the relevant Realm password]"
-            static let serverURL: URL // the URL of the Realm server to use
+         static let username = "[the relevant Realm username]"
+         static let password = "[the relevant Realm password]"
+         static let serverURL: URL // the URL of the Realm server to use
          }
-        */
+         */
         //        let syncCredentials = SyncCredentials.usernamePassword(username: username, password: password, register: false)
         let syncCredentials = SyncCredentials.usernamePassword(username: login.username, password: login.password)
         
@@ -70,14 +121,16 @@ class FavoritesTableViewController: UITableViewController {
         if self.favorites.realm == nil, let list = self.realm.objects(VideoList.self).first {
             self.favorites = list.items
         }
-        self.tableView.reloadData()
+//        self.tableView.reloadData()
     }
-
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setUpRealm()
+        searchBar.delegate = self
         
+
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
@@ -97,32 +150,38 @@ class FavoritesTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return favorites.count
-    }
-    
-    /// Handles a cell being tapped; figures out which cell it was, then fires the proper event
-    ///
-    /// - Parameter sender: the sending UITapGestureRecognizer
-    func cellTap(_ sender: UITapGestureRecognizer){
-        let sendLocation = sender.location(in: self.tableView)
-        let path = self.tableView.indexPathForRow(at: sendLocation)
-        let videoURL = favorites[path?.row ?? 0].watchURL
-        let sfVC = SFSafariViewController(url: videoURL)
-        self.present(sfVC, animated: true, completion: nil)
+        return results.count
     }
 
+    func cellPress(_ sender: UILongPressGestureRecognizer){
+        let sendLocation = sender.location(in: self.tableView)
+        let path = self.tableView.indexPathForRow(at: sendLocation)
+        try! realm.write {
+            favorites.append(results[path?.row ?? 0])
+        }
+    }
+    
+    func cellTap(_ sender: UITapGestureRecognizer){ // Handle a tap
+        let sendLocation = sender.location(in: self.tableView)
+        let path = self.tableView.indexPathForRow(at: sendLocation)
+        let videoURL = results[path?.row ?? 0].watchURL
+        let sView = SFSafariViewController(url: videoURL)
+        self.present(sView, animated: true, completion: nil)
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        if let thumbURL = favorites[indexPath.row].thumbURL{
+        if let thumbURL = results[indexPath.row].thumbURL{
             cell.imageView?.downloadedFrom(url: thumbURL, tableView: self.tableView, cell: cell)
         }
-        cell.textLabel?.text = favorites[indexPath.row].title
-        cell.detailTextLabel?.text = favorites[indexPath.row].detail
+        cell.textLabel?.text = results[indexPath.row].title
+        cell.detailTextLabel?.text = results[indexPath.row].detail
         
-        // I *could* subclass UITableViewCell and handle this that way, but this is more fun
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(FavoritesTableViewController.cellTap(_:)))
+        let pressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(SearchTableViewController.cellPress(_:)))
+        cell.addGestureRecognizer(pressRecognizer)
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(SearchTableViewController.cellTap(_:)))
         cell.addGestureRecognizer(tapRecognizer)
-        cell.showsReorderControl = true // and this way we can always rearrange things, hopefully
+        
         return cell
     }
 
@@ -134,14 +193,6 @@ class FavoritesTableViewController: UITableViewController {
     }
     */
 
-    override func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]?{
-        let deleteAction = UITableViewRowAction(style: .destructive, title: "Delete") { (sender, path) in
-            try! self.realm.write {
-                self.favorites.remove(at: path.row)
-            }
-        }
-        return [deleteAction]
-    }
     /*
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
@@ -154,14 +205,12 @@ class FavoritesTableViewController: UITableViewController {
     }
     */
 
-    
+    /*
     // Override to support rearranging the table view.
     override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-        try! realm.write{
-            favorites.move(from: fromIndexPath.row, to: to.row) // Turns out the List class is part of Realm, I spent a while trying to find it in the Swift docs
-        }
+
     }
- 
+    */
 
     /*
     // Override to support conditional rearranging of the table view.
@@ -181,60 +230,4 @@ class FavoritesTableViewController: UITableViewController {
     }
     */
 
-}
-
-
-extension UIImageView { // thank you Stack Overflow (http://stackoverflow.com/questions/24231680/loading-downloading-image-from-url-on-swift)
-    
-    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit, tableView: UITableView, cell: UITableViewCell) {
-        contentMode = mode
-//        print("  \(cell.textLabel?.text ?? "Untitled") \nURL: \(url.absoluteURL)")
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            guard
-                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-                let data = data, error == nil,
-                let image = UIImage(data: data)
-                else { return }
-            DispatchQueue.main.async() { () -> Void in
-                if self.image == nil{
-                    self.image = image
-                    if let path = tableView.indexPath(for: cell){
-                        tableView.reloadRows(at: [path], with: .none)
-                    }
-                    
-                }
-            }
-        }.resume()
-    }
-    
-    /// Fills the image with a URL
-    ///
-    /// - Parameters:
-    ///   - url: URL to load the file from
-    ///   - mode: UIViewContentMode to use, defaults .scaleAspectFit
-    func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {
-        contentMode = mode
-        URLSession.shared.dataTask(with: url) { (data, response, error) in
-            print("Completion handler on \(url.absoluteURL)")
-            guard
-                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-                let data = data, error == nil,
-                let image = UIImage(data: data)
-                else { return }
-            DispatchQueue.main.async() { () -> Void in
-                self.image = image
-            }
-        }.resume()
-    }
-    /// Fills the image with a URL
-    ///
-    /// - Parameters:
-    ///   - link: URL to load the file from, as a String
-    ///   - mode: UIViewContentMode to use, defaults .scaleAspectFit
-    func downloadedFrom(link: String, contentMode mode: UIViewContentMode = .scaleAspectFit) {
-        guard let url = URL(string: link) else { return }
-        downloadedFrom(url: url, contentMode: mode)
-    }
 }
